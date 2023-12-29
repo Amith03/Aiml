@@ -1,0 +1,72 @@
+import random
+import string
+
+TARGET_STRING = "HELLOGENETICALGORITHM"
+POPULATION_SIZE = 1000
+MUTATION_RATE = 0.01
+MAX_GENERATIONS = 1000
+
+def random_string(length=len(TARGET_STRING)):
+    return ''.join(random.choice(string.ascii_uppercase) for _ in range(length))
+
+# Compute how close a string is to the target string
+def fitness(individual):
+    # Count number of positions where the individuol strinq matches the target string
+    return sum(1 for a, b in zip(individual, TARGET_STRING) if a==b)
+
+# Select a parent string from the population, favoring fitter strings
+def select_parent(population):
+    # Select ond return one individual. from the population based on fitness weights
+    return random.choices(population, weights=[fitness(ind) for ind in population], k=1)[0]
+
+# Combine two strings into one
+def crossover(parent1, parent2):
+    # Randomly choose a split point
+    split= random.randint(1, len(TARGET_STRING)-2)
+    # Create a new string that's part one parent and part the other
+    child = parent1[:split] + parent2[split:]
+    return child
+
+# Bloke a smolt random change to a string
+def mutate(individual):
+    # With a small chance, alter one character in the string
+    if random.random() < MUTATION_RATE:
+        # Pick a random position in the string
+        position = random. randint(0, len(TARGET_STRING) - 1)
+        # Pick a random uppercase character
+        replacement = random.choice(string.ascii_uppercase)
+        # Replace the character at the chosen position
+        individual = individual[:position] + replacement + individual[position+1:]
+    return individual
+
+# The main evolution process
+def evolve():
+    # Create an initial random population of strings
+    population = [random_string() for _ in range(POPULATION_SIZE)]
+    # For a number of generations...
+    for generation in range(MAX_GENERATIONS):
+        # Print the best string in this generation
+        print(f"Generation {generation + 1}: Best String: {max(population, key=fitness)}")
+        
+        # If we 've found the target string, stop
+        if max(population, key=fitness) == TARGET_STRING:
+            print("Target String reached!")
+            break
+            
+        # Create a new generation of strings
+        new_population = []
+        for _ in range(POPULATION_SIZE):
+            # select 2 parent strings
+            parent1 = select_parent(population)
+            parent2 = select_parent(population)
+            # Create child string by combining the parents
+            child = crossover(parent1, parent2)
+            # Possibly mutate the child
+            child = mutate(child)
+            # Add the child to the new generation
+            new_population.append(child)
+            
+        # Replace the old generation with new generation
+        population = new_population
+
+evolve()
