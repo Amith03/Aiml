@@ -1,0 +1,52 @@
+import numpy as np
+import pandas as pd
+from sklearn.datasets import load_iris
+from sklearn.mixture import GaussianMixture
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+# Load the data from a CSV file
+iris = load_iris()
+
+# Extract the features from the data
+features = iris.data
+
+
+
+from sklearn import preprocessing
+# transform your data such that its distribution will have a
+# mean value 0 and standard deviation of 1.
+#scaler = preprocessing.StandardScaler()
+#scaler.fit(features)
+#xsa = scaler.transform(features)
+
+# Apply EM algorithm
+em_model = GaussianMixture(n_components=4)
+em_model.fit(features)
+em_labels = em_model.predict(features)
+
+# Apply k-means algorithm
+kmeans_model = KMeans(n_clusters=4)
+kmeans_model.fit(features)
+kmeans_labels = kmeans_model.predict(features)
+
+# Compare the results
+print("EM Algorithm Clustering:")
+print(em_labels)
+print("K-means Algorithm Clustering:")
+print(kmeans_labels)
+
+
+# Visualization of the clusters
+plt.figure(figsize=(14,7))
+# real plot
+plt.subplot(1,3,1)
+plt.scatter(features[:, 0], features[:, 1], c=iris.target, cmap='viridis')
+plt.title('Real')
+plt.subplot(1, 3, 2)
+plt.scatter(features[:, 0], features[:, 1], c=em_labels, cmap='viridis')
+plt.title('EM Algorithm Clustering')
+plt.subplot(1, 3, 3)
+plt.scatter(features[:, 0], features[:, 1], c=kmeans_labels, cmap='viridis')
+plt.title('K-means Algorithm Clustering')
+plt.show()
